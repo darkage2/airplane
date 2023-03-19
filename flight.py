@@ -23,9 +23,16 @@ def sanitize_input(input_str):
     Returns:
         str: The sanitized input string.
     """
-    if input_str is None:
-        return ""
-    return input_str.strip().lower()
+  // remove leading and trailing white spaces
+  input_str = input_str.trim();
+
+  // convert to lower case
+  input_str = input_str.toLowerCase();
+
+  // remove non-alphabetic characters
+  input_str = input_str.replace(/[^a-z]/g, '');
+
+  return input_str;
 
 def get_exchange_rate(currency_from, currency_to):
     """
