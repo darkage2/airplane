@@ -52,6 +52,27 @@ def convert_currency(amount, currency_from):
     converted_amount = amount * exchange_rate
     return converted_amount
 
+def generate_airport_db():
+    url = "https://skyscanner-api.p.rapidapi.com/apiservices/reference/v1.0/airports"
+    headers = {
+        "X-RapidAPI-Key": "c3740eeb62mshda375eb7383032dp1af6f5jsn553327cd3e8e",
+        "X-RapidAPI-Host": "skyscanner-api.p.rapidapi.com"
+    }
+    response = requests.get(url, headers=headers)
+    airports = response.json()['Airports']
+    airport_db = {}
+    for airport in airports:
+        city = airport['CityName']
+        country = airport['CountryName']
+        name = airport['Name']
+        code = airport['IataCode']
+        if country not in airport_db:
+            airport_db[country] = {}
+        if city not in airport_db[country]:
+            airport_db[country][city] = []
+        airport_db[country][city].append({'name': name, 'code': code})
+    return airport_db
+
 def get_available_airports():
     """
     Retrieves a dictionary of all available airports from the Skyscanner API, with IATA codes as keys.
