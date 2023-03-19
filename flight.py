@@ -24,16 +24,9 @@ def sanitize_input(input_str):
     Returns:
         str: The sanitized input string.
     """
-  // remove leading and trailing white spaces
-  input_str = input_str.trim();
-
-  // convert to lower case
-  input_str = input_str.toLowerCase();
-
-  // remove non-alphabetic characters
-  input_str = input_str.replace(/[^a-z]/g, '');
-
-  return input_str;
+    if input_str is None:
+        return ""
+    return input_str.strip().lower()
 
 def get_exchange_rate(currency_from, currency_to):
     """
@@ -52,37 +45,6 @@ def convert_currency(amount, currency_from):
     exchange_rate = get_exchange_rate(currency_from, CURRENCY)
     converted_amount = amount * exchange_rate
     return converted_amount
-
-def generate_airport_db():
-    url = "https://skyscanner-api.p.rapidapi.com/apiservices/reference/v1.0/airports"
-    headers = {
-        "X-RapidAPI-Key": "c3740eeb62mshda375eb7383032dp1af6f5jsn553327cd3e8e",
-        "X-RapidAPI-Host": "skyscanner-api.p.rapidapi.com"
-    }
-
-    # Make a request to the API to get the airports data
-    response = requests.get(url, headers=headers)
-    data = response.json()
-
-    # Create a new database and a new table to store the airport data
-    conn = sqlite3.connect("airport.db")
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS airports (
-                    id TEXT PRIMARY KEY,
-                    name TEXT,
-                    city TEXT,
-                    country TEXT,
-                    iata_code TEXT
-                    )''')
-
-    # Insert the airport data into the table
-    for airport in data["Airports"]:
-        c.execute("INSERT INTO airports VALUES (?, ?, ?, ?, ?)",
-                  (airport["Id"], airport["Name"], airport["CityName"], airport["CountryName"], airport["IataCode"]))
-
-    # Save the changes and close the connection
-    conn.commit()
-    conn.close()
 
 def get_available_airports():
     """
