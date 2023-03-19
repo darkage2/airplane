@@ -1,4 +1,18 @@
 <!DOCTYPE html>
+<script>
+function sanitizeInput(input) {
+  // Remove leading and trailing whitespace
+  input = input.trim();
+  // Convert input to lowercase
+  input = input.toLowerCase();
+  // Replace all non-alphanumeric characters with spaces
+  input = input.replace(/[^a-z0-9]/g, ' ');
+  // Remove multiple consecutive spaces
+  input = input.replace(/\s+/g, ' ');
+  // Return sanitized input
+  return input;
+}
+</script>
 <html>
   <head>
     <meta charset="utf-8">
