@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import datetime
 import json
 from flask import Flask, render_template, request
+import sqlite3
 
 
 # Define constants
@@ -58,20 +59,30 @@ def generate_airport_db():
         "X-RapidAPI-Key": "c3740eeb62mshda375eb7383032dp1af6f5jsn553327cd3e8e",
         "X-RapidAPI-Host": "skyscanner-api.p.rapidapi.com"
     }
+
+    # Make a request to the API to get the airports data
     response = requests.get(url, headers=headers)
-    airports = response.json()['Airports']
-    airport_db = {}
-    for airport in airports:
-        city = airport['CityName']
-        country = airport['CountryName']
-        name = airport['Name']
-        code = airport['IataCode']
-        if country not in airport_db:
-            airport_db[country] = {}
-        if city not in airport_db[country]:
-            airport_db[country][city] = []
-        airport_db[country][city].append({'name': name, 'code': code})
-    return airport_db
+    data = response.json()
+
+    # Create a new database and a new table to store the airport data
+    conn = sqlite3.connect("airport.db")
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS airports (
+                    id TEXT PRIMARY KEY,
+                    name TEXT,
+                    city TEXT,
+                    country TEXT,
+                    iata_code TEXT
+                    )''')
+
+    # Insert the airport data into the table
+    for airport in data["Airports"]:
+        c.execute("INSERT INTO airports VALUES (?, ?, ?, ?, ?)",
+                  (airport["Id"], airport["Name"], airport["CityName"], airport["CountryName"], airport["IataCode"]))
+
+    # Save the changes and close the connection
+    conn.commit()
+    conn.close()
 
 def get_available_airports():
     """
@@ -235,8 +246,6 @@ def display_flight_information():
         print(f"Invalid input: {adults}. Number of adults must be a positive integer not greater than {MAX_ADULTS}.")
         return
     print("Searching for flights...")
-
-    # TODO: Implement flight search and display of results
 
 def get_flight_prices(departure, destination, departure_date, return_date):
     cache_key = f"{departure}_{destination}_{departure_date}_{return_date}"
