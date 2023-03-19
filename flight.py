@@ -15,7 +15,7 @@ app = Flask(name)
 
 def sanitize_input(input_str):
     """
-    Sanitizes user input to ensure it is safe and does not contain harmful characters.
+    Sanitize the input string by stripping whitespace and converting to lowercase.
 
     Args:
         input_str (str): The user input string to sanitize.
@@ -23,16 +23,9 @@ def sanitize_input(input_str):
     Returns:
         str: The sanitized input string.
     """
-    # Remove all non-alphanumeric characters except whitespace and hyphens
-    input_str = re.sub(r'[^a-zA-Z0-9\s-]+', '', input_str)
-
-    # Convert the input string to lowercase
-    input_str = input_str.lower()
-
-    # Strip leading and trailing whitespace
-    input_str = input_str.strip()
-
-    return input_str
+    if input_str is None:
+        return ""
+    return input_str.strip().lower()
 
 def get_exchange_rate(currency_from, currency_to):
     """
