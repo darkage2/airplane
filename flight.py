@@ -127,17 +127,70 @@ def search_flights(departure_airport, destination_airport, nights, adults):
     Returns:
         list: A list of dictionaries containing detailed information about the 10 cheapest flights available.
     """
-    if request.method == 'POST':
-    # Retrieve the user input from the form
-    departure = sanitize_input(request.form['departure'])
-    destination = sanitize_input(request.form['destination'])
-    nights = int(request.form['nights'])
-    adults = int(request.form['adults'])
+    # get departure airport code
+    departure_airport_code = get_airport_code(departure_airport)
+    if not departure_airport_code:
+        return {"error": "Invalid departure airport."}
     
-    # TODO: Implement flight search and display results
-        
-    # Render the search form template
-    return render_template('search_flights.html')
+    # get destination airport code
+    destination_airport_code = get_airport_code(destination_airport)
+    if not destination_airport_code:
+        return {"error": "Invalid destination airport."}
+    
+    # get flights to destination
+    depart_date = datetime.now().strftime("%Y-%m-%d")
+    return_date = (datetime.now() + timedelta(days=nights)).strftime("%Y-%m-%d")
+    depart_results = get_flight_results(departure_airport_code, destination_airport_code, depart_date, num_adults)
+    return_results = get_flight_results(destination_airport_code, departure_airport_code, return_date, num_adults)
+    
+    # get cheapest flights for departure and return
+    cheapest_departure_flight = get_cheapest_flight(depart_results)
+    cheapest_return_flight = get_cheapest_flight(return_results)
+    
+    # calculate final price
+    final_price = calculate_final_price(cheapest_departure_flight, cheapest_return_flight)
+    
+    # get lodging cost
+    lodging_cost = get_lodging_cost(destination_airport.split(" - ")[-1], num_adults, nights)
+    
+    # format results and return
+    results = []
+    results.append(format_flight(cheapest_departure_flight))
+    results.append(format_flight(cheapest_return_flight))
+    results.append({"price": final_price})
+    results.append({"lodging_cost": lodging_cost})
+    
+    return results
+    
+    
+def get_airport_code(airport):
+    # implement this function to get the airport code given an airport name
+    pass
+    
+    
+def get_flight_results(departure_airport_code, destination_airport_code, depart_date, num_adults):
+    # implement this function to get flight results from an online source
+    pass
+    
+    
+def get_cheapest_flight(flight_results):
+    # implement this function to get the cheapest flight from a list of flight results
+    pass
+    
+    
+def calculate_final_price(departure_flight, return_flight):
+    # implement this function to calculate the final price given the cheapest departure and return flights
+    pass
+    
+    
+def get_lodging_cost(destination_city, num_adults, nights):
+    # implement this function to get the average lodging cost per night per person in the destination city
+    pass
+    
+    
+def format_flight(flight):
+    # implement this function to format a flight result
+    pass
 
 def display_flight_information():
     departure = input("Enter departure airport: ")
